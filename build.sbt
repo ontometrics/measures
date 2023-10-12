@@ -7,3 +7,10 @@ lazy val root = (project in file("."))
     name := "measures",
     idePackagePrefix := Some("com.ontometrics.measures")
   )
+
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.17" % "test"
+libraryDependencies += "org.scalatest" %% "scalatest-funspec" % "3.2.17" % "test"
+
+scalacOptions ++= Seq(
+  "-feature",
+  "-language:implicitConversions")
