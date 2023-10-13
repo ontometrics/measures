@@ -53,5 +53,12 @@ given Conversion[Gram, Ounce] with
   def apply(gram: Gram): Ounce =
     Ounce(gram.amount / 28.349523125)
 
+given Conversion[Ounce, Gram] with
+  def apply(ounces:Ounce): Gram =
+    Gram(ounces.amount * 28.349523125)
+
 extension (grams: Gram)
   def asOunces: Ounce = Ounce(grams.amount/28.349523125)
+
+extension (ounces: Ounce)
+  def asGrams:Gram = Gram(ounces.amount * 28.349523125)
