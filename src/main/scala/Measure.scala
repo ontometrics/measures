@@ -2,10 +2,12 @@ package com.ontometrics.measures
 
 import scala.language.implicitConversions.*
 
-sealed trait Measure
+import unitofmeasurements.mase._
+
+//sealed trait Measure
 
 
-abstract class Weight(val amount: Double, val unit: WeightUnit) extends Ordered[Weight] {
+case class Weight(amount: Double, unit: WeightUnit) extends Ordered[Weight] {
   override def compare(that: Weight): Int = {
     val thisInGrams = this.amount * this.unit.conversionFactorToGrams
     val thatInGrams = that.amount * that.unit.conversionFactorToGrams
@@ -13,9 +15,17 @@ abstract class Weight(val amount: Double, val unit: WeightUnit) extends Ordered[
   }
 }
 
-case class Gram(override val amount: Double) extends Weight(amount, GramUnit)
+trait Convertable[Weight]
 
-case class Ounce(override val amount: Double) extends Weight(amount, OunceUnit)
+given Convertable[Weight] with
+  extension (weight: Weight)
+    def toOunces: Weight = Weight(weight.amount/28.3495, OunceUnit)
+
+
+
+//case class Gram(override val amount: Double) extends Weight(amount, GramUnit)
+//
+//case class Ounce(override val amount: Double) extends Weight(amount, OunceUnit)
 
 sealed abstract class WeightUnit //extends Measurement
 case object GramUnit extends WeightUnit
@@ -45,13 +55,13 @@ extension (unit: WeightUnit) def conversionFactorToGrams: Double =
 
 
 extension (amount: Double)
-  def grams: Weight = Gram(amount)
+  def grams: Weight = Weight(amount, GramUnit)
  // def kilograms: Weight = Kilogram(amount)
-  def ounces: Weight = Ounce(amount)
+  def ounces: Weight = Weight(amount, OunceUnit)
 
-given Conversion[Gram, Ounce] with
-  def apply(gram: Gram): Ounce =
-    Ounce(gram.amount / 28.349523125)
+//given Conversion[Weight, Ounce] with
+//  def apply(gram: Weight): Weight =
+//    Weight((gram.amount / 28.349523125, GramUnit)
 
-extension (grams: Gram)
-  def asOunces: Ounce = Ounce(grams.amount/28.349523125)
+extension (grams: Weight)
+  def asOunces: Weight = Weight(grams.amount/28.349523125, OunceUnit)
