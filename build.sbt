@@ -1,4 +1,4 @@
-ThisBuild / version := "0.1.0-SNAPSHOT"
+ThisBuild / version := "0.1.1-SNAPSHOT"
 
 ThisBuild / scalaVersion := "3.3.1"
 
@@ -14,3 +14,7 @@ libraryDependencies += "org.scalatest" %% "scalatest-funspec" % "3.2.17" % "test
 scalacOptions ++= Seq(
   "-feature",
   "-language:implicitConversions")
+
+githubOwner := "ontometrics"
+githubRepository := "measures"
+githubTokenSource := TokenSource.GitConfig("github.token")

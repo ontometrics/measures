@@ -1,22 +1,23 @@
 package com.ontometrics.measures
 
+import WeightUnit.{Gram, Kilogram, Ounce}
+
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
-import org.scalatest.matchers.must.Matchers.not
 import org.scalatest.matchers.should.Matchers.{an, be, empty, should, shouldBe}
 
 import scala.language.implicitConversions
 
 class WeightTest extends AnyFeatureSpec with GivenWhenThen {
 
+  val exampleWeight: Weight = Weight(10.0, WeightUnit.Gram)
+
   Feature("Comparing Weights") {
     Scenario("Compare 2 weights of units grams") {
       Given("2 different weights")
-      val measure1 = 1.grams
-      val measure2 = 2.grams
       When("comparing")
       Then("1 is less than 2")
-      measure1 should be < measure2
+      1.grams should be < 2.grams
     }
     Scenario("compare 2 weights of differing units"){
       Given("an ounce and a gram")
@@ -27,29 +28,65 @@ class WeightTest extends AnyFeatureSpec with GivenWhenThen {
   }
   Feature("Converting weights"){
     Scenario("we want to convert grams to ounces"){
-      Given("a bunch of grams")
-      val implicitOunces: Ounce = Gram(1000.0)
+      Given("a weight in grams")
       When("asking for them as ounces")
-      val itemInOunces = Gram(1000.0).asOunces
-      Then("we get a new value")
-      itemInOunces should not be null
-      implicitOunces should not be null
+      val ounces = 10.grams.convertTo(Ounce)
+      Then("we get a new weight in ounces")
+      ounces should be (0.3527396194958041.ounces)
     }
     Scenario("we want to convert ounces to grams"){
       Given("a value as ounces")
-      val weight = Ounce(2.5)
+      val weight = 2.5.ounces
       When("asking to get it as grams")
-      val weight2 = weight.asGrams
+      val weight2 = weight.convertTo(Gram)
       Then("we get an equivalent amount")
       weight2 should be (70.8738078125.grams)
-
-      Given("just an assignment from one unit to another")
-      When("performing the assignment")
-      val inGrams:Gram = weight
-      Then("implicit conversion occurs")
-      inGrams should be (70.8738078125.grams)
       }
+    Scenario("convert ounces to kilograms") {
+      Given("ounces")
+      When("converting")
+      val kgs = 1000.ounces.convertTo(Kilogram)
+      Then("we get the weight in kilograms")
+      kgs should be (28.349523125.kilograms)
+    }
+    Scenario("Random additional conversions"){
+      Given("some quantities in unused units")
+      val picograms = 500.picograms
+      When("converting")
+      val grams:Weight = picograms.convertTo(WeightUnit.Gram)
+      Then("we get proper results")
+      grams should be (0.000000000500.grams)
+      When("micrograms are converted to picograms")
+      val result:Weight = 500.picograms.convertTo(WeightUnit.Microgram)
+      result should be (0.0005.micrograms)
+      }
+
   }
   Feature("We need to support rounding for sure"){}
 
+  Feature("adding") {
+    Scenario("adding grams") {
+      Given("2 measurements in grams")
+      When("adding")
+      val sum = 10.grams + 20.grams
+      Then("we get the sum")
+      sum should be (30.grams)
+    }
+    Scenario("adding grams and ounces") {
+      Given("a grams and ounces")
+      When("adding")
+      val sum = 30.grams + 1.ounces
+      Then("we get the sum")
+      sum should be (58.349523125000005.grams)
+    }
+
+    Scenario("adding grams to ounces") {
+      Given("a grams and ounces")
+      When("adding")
+      val sum = 1.ounces + 30.grams
+      Then("we get the sum and should be in ounces")
+      sum should be(2.0582188584874124.ounces)
+    }
+
+  }
 }
