@@ -10,17 +10,19 @@ import scala.language.implicitConversions
 
 class WeightTest extends AnyFeatureSpec with GivenWhenThen {
 
-  val exampleWeight: Weight = Weight(10.0, WeightUnit.Gram)
+  val exampleVolume: Volume = Volume(10.0, VolumeUnit.Liter)
 
-  Feature("Comparing Weights") {
-    Scenario("Compare 2 weights of units grams") {
-      Given("2 different weights")
+  Feature("Comparing Volumes") {
+    Scenario("Compare volumes of same units") {
+      Given("2 volumes")
       When("comparing")
       Then("1 is less than 2")
-      1.grams should be < 2.grams
+      1.liters should be < 2.liters
+      2.cups should be > 1.cups
+
     }
-    Scenario("compare 2 weights of differing units"){
-      Given("an ounce and a gram")
+    Scenario("compare volumes of differing units"){
+      Given("2 volumes of")
       When("we compare the two")
       1.ounces should be > 1.grams
       Then("should work")
@@ -59,6 +61,9 @@ class WeightTest extends AnyFeatureSpec with GivenWhenThen {
       When("micrograms are converted to picograms")
       val result:Weight = 500.picograms.convertTo(WeightUnit.Microgram)
       result should be (0.0005.micrograms)
+      When("nanograms to grams")
+      val inGrams = 1000000.nanograms.convertTo(WeightUnit.Gram)
+      inGrams should be (.001.grams)
       }
 
   }
