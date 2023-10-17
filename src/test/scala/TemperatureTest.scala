@@ -1,14 +1,11 @@
 package com.ontometrics.measures
 
-import com.ontometrics.measures.TemperatureUnit.{Celsius, Fahrenheit, Kelvin}
+import TemperatureUnit.{Celsius, Fahrenheit}
+
 import org.scalatest.GivenWhenThen
 import org.scalatest.featurespec.AnyFeatureSpec
-import org.scalatest.matchers.{MatchResult, Matcher}
-import org.scalatest.matchers.must.Matchers.{a, be, mustBe}
+import org.scalatest.matchers.must.Matchers.be
 import org.scalatest.matchers.should.Matchers.{an, should, shouldBe}
-import org.scalactic.Tolerance.convertNumericToPlusOrMinusWrapper
-import org.scalatest.matchers.must.Matchers.convertNumericToPlusOrMinusWrapper
-import org.scalatest.matchers.should.Matchers.convertNumericToPlusOrMinusWrapper
 
 import java.math.{MathContext, RoundingMode}
 
@@ -21,8 +18,6 @@ class TemperatureTest extends AnyFeatureSpec with GivenWhenThen {
       When("expressing it")
       Then("it is a working type")
       val ambientTemperature = Temperature(85, Fahrenheit)
-      val overnightLowTemperature = Temperature(62, TemperatureUnit.Fahrenheit)
-      //ambientTemperature should be > (overnightLowTemperature)
       ambientTemperature.amount should be(85)
       ambientTemperature.temperatureUnit should be(TemperatureUnit.Fahrenheit)
     }
@@ -34,6 +29,11 @@ class TemperatureTest extends AnyFeatureSpec with GivenWhenThen {
       val inC = currentTemperature.to(Celsius)
       Then("we should get the right adjustment in the amount")
       inC should be (29.4.celsius)
+      Given("an amount in Celsius")
+      val currentTemperatureC = 29.celsius
+      When("converting to F")
+      val newTempInF = currentTemperatureC.to(Fahrenheit)
+      newTempInF should be (84.2.fahrenheit)
     }
 
   }
@@ -42,12 +42,15 @@ class TemperatureTest extends AnyFeatureSpec with GivenWhenThen {
 }
 
 extension (amount: Double)
-  def celsius = Temperature(amount, Celsius)
+  def celsius: Temperature = Temperature(amount.toOnePlace, Celsius)
+  def fahrenheit: Temperature = Temperature(amount.toOnePlace, Fahrenheit)
+  def toOnePlace: Double = BigDecimal(amount, MathContext(3, RoundingMode.HALF_UP)).doubleValue
 
 extension (t: Temperature)
-  def to(unit: TemperatureUnit) =
+  def to(unit: TemperatureUnit): Temperature =
     (t.temperatureUnit, unit) match {
-      case (Fahrenheit, Celsius) => Temperature(BigDecimal((t.amount - 32) / 1.8, MathContext(3, RoundingMode.HALF_UP)).doubleValue, TemperatureUnit.Celsius)
+      case (Fahrenheit, Celsius) => ((t.amount - 32) / 1.8).celsius
+      case (Celsius, Fahrenheit) => ((t.amount * 1.8) + 32).fahrenheit
       case _ => t
     }
 

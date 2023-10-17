@@ -1,5 +1,6 @@
 package com.ontometrics.measures
 
+trait MeasureUnit
 trait TemperatureUnits extends MeasureUnit
 
 enum TemperatureUnit extends TemperatureUnits {
