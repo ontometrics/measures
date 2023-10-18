@@ -9,4 +9,4 @@ enum TemperatureUnit extends TemperatureUnits {
   case Kelvin
 }
 
-case class Temperature(val amount:Double, val temperatureUnit: TemperatureUnit)
+case class Temperature(amount:Double, temperatureUnit: TemperatureUnit)
