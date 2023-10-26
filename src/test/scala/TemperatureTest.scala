@@ -35,10 +35,7 @@ class TemperatureTest extends AnyFeatureSpec with GivenWhenThen {
       val newTempInF = currentTemperatureC.to(Fahrenheit)
       newTempInF should be (84.2.fahrenheit)
     }
-
   }
-
-
 }
 
 extension (amount: Double)
